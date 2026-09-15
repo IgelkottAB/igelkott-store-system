@@ -1,49 +1,15 @@
-IGELKOTT STORE SYSTEM v3 – SUPABASE
-====================================
+IGELKOTT STORE SYSTEM v4
 
-1. Supabase
-- Öppna projektet Igelkott store.
-- SQL Editor -> New query.
-- Öppna schema.sql från ZIP-filen.
-- Klistra in hela SQL-filen och klicka Run.
+1. Du har redan kört v3-SQL och skapat ditt owner-konto.
+2. Kör NU schema-v4.sql i Supabase -> SQL Editor -> New query -> Run.
+3. Ladda upp alla v4-filer till GitHub och ersätt de gamla filerna.
+4. Öppna GitHub Pages igen.
+5. Logga in som owner.
+6. Under "Produkter & lager" klickar du "+ Ny produkt".
+7. Fyll i produktnamn, SKU, kategori, pris, inköpspris och lagerantal.
+8. Kunder kan se produkter som är markerade "Synlig för kunder".
 
-2. Skapa första konto
-- Öppna kund.html.
-- Klicka Skapa konto.
-- Skapa ditt eget konto med en riktig e-postadress.
-- Om e-postbekräftelse är aktiv: bekräfta kontot via e-post.
-- Gå sedan tillbaka till Supabase SQL Editor.
-- Kör sista raden i schema.sql efter att du bytt DIN-EPOST-HÄR till din e-post:
-  update public.profiles set role='owner' where email='DIN-EPOST-HÄR';
-
-3. GitHub Pages
-Lägg dessa filer i ditt repo:
-index.html
-admin.html
-kund.html
-admin.js
-customer.js
-config.js
-style.css
-
-4. Sidor
-Kund:
-.../kund.html
-
-Butik:
-.../index.html
-Efter inloggning skickas personal till admin.html.
-
-5. Säkerhet
-config.js innehåller endast Supabase URL + publishable key.
-Det är avsett för webbläsaren. Lägg ALDRIG en sb_secret_... eller service-role-nyckel i GitHub.
-RLS i schema.sql skyddar kunddata.
-
-6. Nästa steg
-- Produkter/lager i Supabase
-- Kundernas datorer
-- Onlinebeställningar
-- Hemleverans
-- Leveransspårning
-- Personalroller
-- Företagskonton så flera butiker kan använda samma system
+Viktigt:
+- config.js innehåller endast Supabase publishable key. Lägg ALDRIG in en Supabase secret/service-role key här.
+- Produkter skyddas av RLS. Kunder kan läsa publicerade produkter men kan inte ändra lager.
+- Owner/admin/staff kan lägga till och ändra produkter.
