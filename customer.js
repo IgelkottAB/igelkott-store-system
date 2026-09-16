@@ -49,7 +49,7 @@ function productHtml(list){
 function serviceHtml(list){
   if(!list.length)return '<p class="muted">Du har inga serviceärenden ännu.</p>';
   let states=['Inlämnad','Undersökning','Väntar på reservdel','Reparation pågår','Klar','Hämtad'];
-  return list.map(s=>{let i=states.indexOf(s.status);return `<div class="card" style="margin-bottom:12px"><div class="row"><b>${esc(s.ticket_no)}</b><span class="ok">${esc(s.status)}</span></div><h3>${esc(s.device)}</h3><p>${esc(s.problem||'')}</p><div class="statusbar">${states.map((x,j)=>`<span class="${j<=i?'on':''}"></span>`).join('')}</div><p class="small">${esc(s.note||'')}</p></div>`}).join('');
+  return list.map(s=>{let i=states.indexOf(s.status);return `<div class="card" style="margin-bottom:12px"><div class="row"><b>${esc(s.ticket_no)}</b><span class="ok">${esc(s.status)}</span></div><h3>${esc(s.device)}</h3><p>${esc(s.problem||'')}</p><p><b>Pris:</b> ${money(s.price)}</p><div class="statusbar">${states.map((x,j)=>`<span class="${j<=i?'on':''}"></span>`).join('')}</div><p class="small">${esc(s.note||'')}</p></div>`}).join('');
 }
 function loginView(){
   $('#customerApp').innerHTML=`<div class="card login"><div class="tabs"><button id="showLogin">Logga in</button><button id="showSignup">Skapa konto</button></div><div id="authBox"></div></div>`;

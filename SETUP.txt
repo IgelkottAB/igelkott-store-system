@@ -13,3 +13,7 @@ Viktigt:
 - config.js innehåller endast Supabase publishable key. Lägg ALDRIG in en Supabase secret/service-role key här.
 - Produkter skyddas av RLS. Kunder kan läsa publicerade produkter men kan inte ändra lager.
 - Owner/admin/staff kan lägga till och ändra produkter.
+
+
+V4.1 – SERVICEÄRENDEN:
+Kör schema-v4.sql igen i Supabase SQL Editor efter att du laddat upp denna version. Den lägger till prisfältet på serviceärenden.

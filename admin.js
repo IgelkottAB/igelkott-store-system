@@ -78,8 +78,8 @@ async function renderAdmin(){
   <div class="panel" style="margin-top:18px">
     <div class="row"><h2>Service</h2><button id="newService" class="btn">+ Nytt ärende</button></div>
     <div id="serviceFormArea"></div>
-    <table class="table"><tr><th>Ärende</th><th>Kund</th><th>Enhet</th><th>Status</th><th></th></tr>
-    ${(services||[]).map(s=>{let c=(customers||[]).find(x=>x.id===s.customer_id);return `<tr><td>${esc(s.ticket_no)}</td><td>${esc(c?.full_name||c?.email||'')}</td><td>${esc(s.device)}</td><td>${esc(s.status)}</td><td><button class="btn secondary smallbtn editService" data-id="${s.id}">Ändra</button></td></tr>`}).join('')}
+    <table class="table"><tr><th>Ärende</th><th>Kund</th><th>Enhet</th><th>Pris</th><th>Status</th><th></th></tr>
+    ${(services||[]).map(s=>{let c=(customers||[]).find(x=>x.id===s.customer_id);return `<tr><td>${esc(s.ticket_no)}</td><td>${esc(c?.full_name||c?.email||'')}</td><td>${esc(s.device)}</td><td>${money(s.price)}</td><td>${esc(s.status)}</td><td><button class="btn secondary smallbtn editService" data-id="${s.id}">Ändra</button></td></tr>`}).join('')}
     </table>
   </div>`;
 
@@ -138,20 +138,38 @@ function showStockForm(p){
 }
 
 function showServiceForm(customers){
-  $('#serviceFormArea').innerHTML=`<div class="notice"><h3>Nytt serviceärende</h3>
+  const area=$('#serviceFormArea');
+  if(!customers.length){
+    area.innerHTML=`<div class="notice"><h3>Nytt serviceärende</h3><p>Det finns inga kunder ännu. Kunden måste först skapa ett konto.</p><button type="button" id="cancelService" class="btn secondary">Stäng</button></div>`;
+    $('#cancelService').onclick=()=>area.innerHTML='';
+    return;
+  }
+  area.innerHTML=`<div class="notice"><h3>➕ Nytt serviceärende</h3>
   <form id="sf2" class="form">
-    <select name="customer" required>${customers.map(c=>`<option value="${c.id}">${esc(c.full_name||'')}${c.email?' – '+esc(c.email):''}</option>`).join('')}</select>
-    <input name="device" placeholder="Dator/enhet" required>
-    <textarea name="problem" placeholder="Problem"></textarea>
-    <div class="actions"><button class="btn success">Skapa</button><button type="button" id="cancelService" class="btn secondary">Avbryt</button></div>
+    <label>Kund<select name="customer" required>${customers.map(c=>`<option value="${c.id}">${esc(c.full_name||'Okänd kund')}${c.email?' – '+esc(c.email):''}</option>`).join('')}</select></label>
+    <label>Produkt / enhet<input name="device" placeholder="T.ex. Lenovo Legion 5" required></label>
+    <label>Felbeskrivning<textarea name="problem" placeholder="Beskriv problemet kunden har"></textarea></label>
+    <label>Pris (kr)<input name="price" type="number" min="0" step="0.01" placeholder="T.ex. 799"></label>
+    <label>Anteckningar<textarea name="note" placeholder="Interna eller kundsynliga anteckningar"></textarea></label>
+    <label>Status<select name="status"><option>Inlämnad</option><option>Undersökning</option><option>Väntar på reservdel</option><option>Reparation pågår</option><option>Klar</option><option>Hämtad</option></select></label>
+    <div class="actions"><button class="btn success">Skapa serviceärende</button><button type="button" id="cancelService" class="btn secondary">Avbryt</button></div>
     <p id="sfmsg" class="msg"></p>
   </form></div>`;
-  $('#cancelService').onclick=()=>$('#serviceFormArea').innerHTML='';
+  $('#cancelService').onclick=()=>area.innerHTML='';
   $('#sf2').onsubmit=async e=>{
-    e.preventDefault(); const f=new FormData(e.target);
-    const {error}=await sb.from('service_tickets').insert({customer_id:f.get('customer'),device:f.get('device'),problem:f.get('problem'),status:'Inlämnad'});
-    $('#sfmsg').textContent=error?error.message:'Skapat!';
-    if(!error)setTimeout(renderAdmin,400);
+    e.preventDefault();
+    const f=new FormData(e.target);
+    const payload={
+      customer_id:f.get('customer'),
+      device:f.get('device'),
+      problem:f.get('problem'),
+      price:Number(f.get('price')||0),
+      note:f.get('note'),
+      status:f.get('status')
+    };
+    const {error}=await sb.from('service_tickets').insert(payload);
+    $('#sfmsg').textContent=error?error.message:'Serviceärendet är skapat!';
+    if(!error)setTimeout(renderAdmin,500);
   };
 }
 
@@ -160,6 +178,7 @@ function showEditService(s){
   $('#serviceFormArea').innerHTML=`<div class="notice"><h3>Uppdatera ${esc(s.ticket_no)}</h3>
   <form id="us" class="form">
     <select name="status">${states.map(x=>`<option ${x===s.status?'selected':''}>${x}</option>`).join('')}</select>
+    <input name="price" type="number" min="0" step="0.01" placeholder="Pris (kr)" value="${s?.price??0}">
     <textarea name="note" placeholder="Meddelande till kund">${esc(s.note||'')}</textarea>
     <div class="actions"><button class="btn success">Spara</button><button type="button" id="cancelEditService" class="btn secondary">Avbryt</button></div>
     <p id="usmsg" class="msg"></p>
@@ -167,7 +186,7 @@ function showEditService(s){
   $('#cancelEditService').onclick=()=>$('#serviceFormArea').innerHTML='';
   $('#us').onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.target);
-    const {error}=await sb.from('service_tickets').update({status:f.get('status'),note:f.get('note'),updated_at:new Date().toISOString()}).eq('id',s.id);
+    const {error}=await sb.from('service_tickets').update({status:f.get('status'),price:Number(f.get('price')||0),note:f.get('note'),updated_at:new Date().toISOString()}).eq('id',s.id);
     $('#usmsg').textContent=error?error.message:'Sparat!';
     if(!error)setTimeout(renderAdmin,400);
   };
