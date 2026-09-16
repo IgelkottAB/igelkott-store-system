@@ -1,19 +1,8 @@
-IGELKOTT STORE SYSTEM v4
+IGELKOTT STORE v5 – SHOPPING
 
-1. Du har redan kört v3-SQL och skapat ditt owner-konto.
-2. Kör NU schema-v4.sql i Supabase -> SQL Editor -> New query -> Run.
-3. Ladda upp alla v4-filer till GitHub och ersätt de gamla filerna.
-4. Öppna GitHub Pages igen.
-5. Logga in som owner.
-6. Under "Produkter & lager" klickar du "+ Ny produkt".
-7. Fyll i produktnamn, SKU, kategori, pris, inköpspris och lagerantal.
-8. Kunder kan se produkter som är markerade "Synlig för kunder".
-
-Viktigt:
-- config.js innehåller endast Supabase publishable key. Lägg ALDRIG in en Supabase secret/service-role key här.
-- Produkter skyddas av RLS. Kunder kan läsa publicerade produkter men kan inte ändra lager.
-- Owner/admin/staff kan lägga till och ändra produkter.
-
-
-V4.1 – SERVICEÄRENDEN:
-Kör schema-v4.sql igen i Supabase SQL Editor efter att du laddat upp denna version. Den lägger till prisfältet på serviceärenden.
+1. Ladda upp/ersätt webb-filerna på GitHub.
+2. Kör schema-v5.sql EN gång i Supabase SQL Editor.
+3. Kontrollera att config.js innehåller din riktiga Supabase URL och publishable key.
+4. Kundsidan har nu kundvagn, kassa, orderhistorik, sök/filter, rabattkoder och recensioner.
+5. Admin har orderhantering, statistik och rabattkoder.
+6. Kort/Swish är förberett som betalmetod men riktiga pengar/kortbetalningar kräver en betalningsleverantör (t.ex. Stripe/Swish) och server-side betalflöde.
